@@ -20,7 +20,7 @@ class Ship:
         self.angle = 0
         self.direction = pygame.math.Vector2(0, 1) #definir la dirección incial que tiene el sprite dependiendo de la orientación del png
         self.speed = speed
-        self.img_ship = pygame.image.load('nave/prueba/spr_nave.png')
+        self.img_ship = pygame.image.load('spr_nave.png')
         self.img_ship_size = self.img_ship.get_size() #al sacar el tamaño del sprite podemos definir dónde se ubica el punto de donde debe partir la bala
         self.point_head = pygame.Vector2((self.position[0] + (self.img_ship_size[0]//2)), self.position[1]) #para ubicar el punto de origen de la bala
         self.trans_point_head = self.point_head - self.position #devuelve el punto a la posición correcta
