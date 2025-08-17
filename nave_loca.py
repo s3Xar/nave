@@ -20,7 +20,7 @@ class Ship:
         self.angle = 0
         self.direction = pygame.math.Vector2(0, 1) #definir la dirección incial que tiene el sprite dependiendo de la orientación del png
         self.speed = speed
-        self.img_ship = pygame.image.load('nave/spr_nave.png')
+        self.img_ship = pygame.image.load('nave/prueba/spr_nave.png')
         self.img_ship_size = self.img_ship.get_size() #al sacar el tamaño del sprite podemos definir dónde se ubica el punto de donde debe partir la bala
         self.point_head = pygame.Vector2((self.position[0] + (self.img_ship_size[0]//2)), self.position[1]) #para ubicar el punto de origen de la bala
         self.trans_point_head = self.point_head - self.position #devuelve el punto a la posición correcta
@@ -77,7 +77,7 @@ class Bullet:
         self.direction = pygame.Vector2(direction).normalize()
         self.lenght = 10
         self.speed = 800
-        self.img_bullet = pygame.image.load('nave/spr_bullet.png')
+        self.img_bullet = pygame.image.load('nave/prueba/spr_bullet.png')
         self.img_bullet = pygame.transform.rotozoom(self.img_bullet, 0, 2)
         dy, dx = self.direction.y, self.direction.x
         self.angle = -math.degrees(math.atan2(dy, dx)) + 90
@@ -126,11 +126,11 @@ while running:
 
     screen.fill(black)
     Ship_1.update(deltaTime)
-    # pygame.draw.rect(screen, yellow, Ship_1.rect_rot_ship, 1)
+    pygame.draw.rect(screen, yellow, Ship_1.rect_rot_ship, 1)
 
     for bullet in Bullets:
         bullet.update(screen, deltaTime)
-        # pygame.draw.rect(screen, red, bullet.rot_rect_img_bullet, 1)
+        pygame.draw.rect(screen, red, bullet.rot_rect_img_bullet, 1)
     
     
 
