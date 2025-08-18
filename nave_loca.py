@@ -1,5 +1,6 @@
 import pygame
 import math
+import random
 
 pygame.init()
 
@@ -20,7 +21,7 @@ class Ship:
         self.angle = 0
         self.direction = pygame.math.Vector2(0, 1) #definir la dirección incial que tiene el sprite dependiendo de la orientación del png
         self.speed = speed
-        self.img_ship = pygame.image.load('spr_nave.png')
+        self.img_ship = pygame.image.load('nave/prueba/spr_nave.png')
         self.img_ship_size = self.img_ship.get_size() #al sacar el tamaño del sprite podemos definir dónde se ubica el punto de donde debe partir la bala
         self.point_head = pygame.Vector2((self.position[0] + (self.img_ship_size[0]//2)), self.position[1]) #para ubicar el punto de origen de la bala
         self.trans_point_head = self.point_head - self.position #devuelve el punto a la posición correcta
@@ -58,9 +59,13 @@ class Ship:
 
     def out_of_limits(self, screen):
        screen_rect = screen.get_rect()
-       w, h = self.img_rot_ship.get_size()
-       self.position.x = max(w/2, min(screen_rect.width - w/2, self.position.x))
-       self.position.y = max(h/2, min(screen_rect.height - h/2, self.position.y))
+       rect = self.img_rot_ship.get_rect(center = self.position)
+       rect.clamp_ip(screen_rect)
+       self.position.update(rect.center)
+
+    #    w, h = self.img_rot_ship.get_size()
+    #    self.position.x = max(w/2, min(screen_rect.width - w/2, self.position.x))
+    #    self.position.y = max(h/2, min(screen_rect.height - h/2, self.position.y))
         
 
     def update(self, dt):
@@ -91,11 +96,13 @@ class Bullet:
     def move(self, dt):
         self.origin += self.direction * self.speed * dt
 
-    def out_of_limits(self): #matar las balas cuando salgan de la pantalla
-        if self.is_alive == True:
-            pass
-        else:
-            pass
+    def out_of_limits(self, screen): #matar las balas cuando salgan de la pantalla
+       self.screen_rect = screen.get_rect()
+       self.rect = self.rot_img_bullet.get_rect(center = self.origin)
+       
+       if not self.screen_rect.contains(self.rect):
+           return True
+            
             
 
     def update(self, screen, dt):
@@ -104,13 +111,46 @@ class Bullet:
         screen.blit(self.rot_img_bullet, self.rot_rect_img_bullet)
 
 class Alien:
-    def __init__():
-        pass
+    def __init__(self, x, y):
+        self.img_alien = pygame.image.load('nave\prueba\spr_alien.png')
+        self.origin_pos = pygame.Vector2(x, y)
+        self.rect_img_alien = self.img_alien.get_rect(center = self.origin_pos)
+
+    def get_origin(self, sw, sh):
+        xfix = [0, sw] #lista de dos opciones fijas
+        yfix = [0, sh]
+        choice_xfix = random.choice(xfix) #elije entre las dos opciones fijas
+        choice_yfix = random.choice(yfix)
+        xrand = random.randint(0, sw) #numero random entre 0 y sw
+        yrand = random.randint(0, sh) #numero random entre 0 y sh
+        
+
+        if random.choice([True, False]):
+            #x fijo, y random
+            self.x = choice_xfix
+            self.y = yrand
+        else:
+            #x random, y fijo
+            self.x = xrand
+            self.y = choice_yfix
+        return (self.x, self.y)
+
+        #falta lograr que este valor que retorna esta función se aplique a la posición de origen del alien
+
+    def update(self, sw, sh):
+        if self.get_origin(sw, sh) == True:
+            self.origin_pos(self.x,self.y)
+        else:
+            self.origin_pos(self.x, self.y)
+        
+        screen.blit(self.img_alien, self.rect_img_alien)
+
         
 
 
 Ship_1 = Ship(sw//2, sh//2, 200)
 Bullets = []
+Alien_1 = Alien()
 
 running = True
 while running:
@@ -131,8 +171,12 @@ while running:
     for bullet in Bullets:
         bullet.update(screen, deltaTime)
         pygame.draw.rect(screen, red, bullet.rot_rect_img_bullet, 1)
+        if bullet.out_of_limits(screen):
+            Bullets.remove(bullet)
+        print(Bullets)
     
-    
+    Alien_1.update(sw, sh)
+
 
     pygame.display.flip()
 
