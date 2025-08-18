@@ -10,6 +10,8 @@ clock = pygame.time.Clock()
 black = (0, 0, 0)
 yellow = (255, 212, 59)
 red = (255, 0, 0)
+timer = pygame.USEREVENT + 1
+pygame.time.set_timer(timer, 2000)
 
 
 screen = pygame.display.set_mode((sw, sh))
@@ -111,10 +113,13 @@ class Bullet:
         screen.blit(self.rot_img_bullet, self.rot_rect_img_bullet)
 
 class Alien:
-    def __init__(self, x, y):
+    def __init__(self):
         self.img_alien = pygame.image.load('nave\prueba\spr_alien.png')
-        self.origin_pos = pygame.Vector2(x, y)
+        self.x = 0
+        self.y = 0
+        self.origin_pos = pygame.Vector2(self.x, self.y)
         self.rect_img_alien = self.img_alien.get_rect(center = self.origin_pos)
+        self.get_origin(sw, sh)
 
     def get_origin(self, sw, sh):
         xfix = [0, sw] #lista de dos opciones fijas
@@ -133,16 +138,13 @@ class Alien:
             #x random, y fijo
             self.x = xrand
             self.y = choice_yfix
-        return (self.x, self.y)
-
-        #falta lograr que este valor que retorna esta función se aplique a la posición de origen del alien
-
-    def update(self, sw, sh):
-        if self.get_origin(sw, sh) == True:
-            self.origin_pos(self.x,self.y)
-        else:
-            self.origin_pos(self.x, self.y)
+        print(self.x, self.y)
+        self.origin_pos.update(self.x,self.y)
+        self.rect_img_alien = self.img_alien.get_rect(center=self.origin_pos)
         
+    def move(self):
+        pass
+    def update(self, screen):
         screen.blit(self.img_alien, self.rect_img_alien)
 
         
@@ -150,7 +152,7 @@ class Alien:
 
 Ship_1 = Ship(sw//2, sh//2, 200)
 Bullets = []
-Alien_1 = Alien()
+Aliens = []
 
 running = True
 while running:
@@ -162,6 +164,13 @@ while running:
             if event.key == pygame.K_e:
                 new_bullet = Bullet(Ship_1.rot_point_head, Ship_1.rot_direction_v)
                 Bullets.append(new_bullet)
+        if event.type == timer:
+            spawn_alien = Alien()
+            Aliens.append(spawn_alien)
+            
+            
+
+
     
 
     screen.fill(black)
@@ -175,7 +184,11 @@ while running:
             Bullets.remove(bullet)
         print(Bullets)
     
-    Alien_1.update(sw, sh)
+    for alien in Aliens:
+        alien.update(screen)
+    
+        
+    
 
 
     pygame.display.flip()
