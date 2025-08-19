@@ -79,8 +79,6 @@ class Ship:
 class Bullet:
     def __init__(self, origin, direction):
         self.origin = pygame.Vector2(origin)
-        self.is_alive = True
-        self.is_dead = False
         self.direction = pygame.Vector2(direction).normalize()
         self.lenght = 10
         self.speed = 800
@@ -120,11 +118,13 @@ class Alien:
         self.origin_pos = pygame.Vector2(self.x, self.y)
         self.rect_img_alien = self.img_alien.get_rect(center = self.origin_pos)
         self.get_origin(sw, sh)
+        self.direction = pygame.Vector2()
+        self.detect_col = False
 
     def get_origin(self, sw, sh):
         xfix = [0, sw] #lista de dos opciones fijas
         yfix = [0, sh]
-        choice_xfix = random.choice(xfix) #elije entre las dos opciones fijas
+        choice_xfix = random.choice(xfix) #elige entre las dos opciones fijas
         choice_yfix = random.choice(yfix)
         xrand = random.randint(0, sw) #numero random entre 0 y sw
         yrand = random.randint(0, sh) #numero random entre 0 y sh
@@ -138,12 +138,17 @@ class Alien:
             #x random, y fijo
             self.x = xrand
             self.y = choice_yfix
-        print(self.x, self.y)
         self.origin_pos.update(self.x,self.y)
         self.rect_img_alien = self.img_alien.get_rect(center=self.origin_pos)
         
     def move(self):
         pass
+
+    def collision(self, rect):
+        self.detect_col = False
+        if self.rect_img_alien.colliderect(rect):
+            self.detect_col = True
+
     def update(self, screen):
         screen.blit(self.img_alien, self.rect_img_alien)
 
@@ -169,6 +174,7 @@ while running:
             Aliens.append(spawn_alien)
             
             
+            
 
 
     
@@ -182,10 +188,14 @@ while running:
         pygame.draw.rect(screen, red, bullet.rot_rect_img_bullet, 1)
         if bullet.out_of_limits(screen):
             Bullets.remove(bullet)
-        print(Bullets)
     
     for alien in Aliens:
+        for bullet in Bullets:
+            alien.collision(bullet.rot_rect_img_bullet)
+            if alien.detect_col:
+                Aliens.remove(alien)
         alien.update(screen)
+        pygame.draw.rect(screen, red, alien.rect_img_alien, 1)
     
         
     
